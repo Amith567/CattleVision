@@ -1,0 +1,28 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Animal Type Classification</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="container p-4">
+  <h3>Animal Type Classification System</h3>
+  <form method="post" enctype="multipart/form-data" class="mb-4">
+    <input type="file" name="file" accept="image/*" class="form-control mb-2" required>
+    <button type="submit" class="btn btn-primary">Upload & Analyze</button>
+  </form>
+
+  {% if result %}
+  <div class="row">
+    <div class="col-md-6">
+      <img src="{{ annotated_url }}" class="img-fluid border">
+    </div>
+    <div class="col-md-6">
+      <h5>Results</h5>
+      <pre>{{ result | tojson(indent=2) }}</pre>
+      <p>Saved to DB and JSONL. Sent to BPA: {{ 'Yes' if sent_to_bpa else 'No' }}</p>
+    </div>
+  </div>
+  {% endif %}
+</body>
+</html>

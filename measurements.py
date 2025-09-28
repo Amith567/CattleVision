@@ -39,7 +39,13 @@ def rotate_points(pts, angle, center):
         pts_rot.append([xr, yr])
     return np.array(pts_rot)
 
-def analyze_image(image_path):
+def analyze_image(image_path, reference_pixel_length=None, reference_real_length_cm=None):
+    """
+    Analyze animal image and return measurements.
+    
+    reference_pixel_length: pixels of known reference object in image
+    reference_real_length_cm: real length of reference object in cm
+    """
     img = load_image(image_path)
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     contour = get_largest_contour(gray)
@@ -53,21 +59,33 @@ def analyze_image(image_path):
     xs, ys = pts_rot[:,0], pts_rot[:,1]
     min_x, max_x, min_y, max_y = xs.min(), xs.max(), ys.min(), ys.max()
 
-    # Traits
+    # Traits in pixels
     body_length_px = float(max_x - min_x)
-    height_withers_px = float(ys.max() - ys.min())
+    height_withers_px = float(max_y - min_y)
     chest_width_px = float(height_withers_px * 0.4)  # heuristic
     rump_angle_deg = float(round(math.degrees(angle), 2))
+
+    # Convert to cm if reference provided
+    if reference_pixel_length and reference_real_length_cm:
+        pixels_per_cm = reference_pixel_length / reference_real_length_cm
+        body_length_cm = body_length_px / pixels_per_cm
+        height_withers_cm = height_withers_px / pixels_per_cm
+        chest_width_cm = chest_width_px / pixels_per_cm
+    else:
+        body_length_cm = height_withers_cm = chest_width_cm = None
 
     annotated = img.copy()
     cv2.drawContours(annotated, [contour], -1, (0,255,0), 2)
     cv2.putText(annotated, f"Length: {body_length_px:.1f}px", (10,30),
                 cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255,0,0), 2)
-
+    
     return {
         "body_length_px": body_length_px,
         "height_withers_px": height_withers_px,
         "chest_width_px": chest_width_px,
         "rump_angle_deg": rump_angle_deg,
+        "body_length_cm": body_length_cm,
+        "height_withers_cm": height_withers_cm,
+        "chest_width_cm": chest_width_cm,
         "annotated_image": annotated
     }

@@ -1,0 +1,39 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Flask
+instance/
+.webassets-cache
+.env
+.flaskenv
+
+# Uploaded images and annotations
+uploads/
+*.jpg
+*.jpeg
+*.png
+*.gif
+
+# Virtual Environment
+venv/
+ENV/
+
+# Logs
+*.log
+
+# Database
+*.db
+*.sqlite3
+
+# Local records
+records.jsonl
+
+# VS Code
+.vscode/
+*.code-workspace
+
+# System Files
+.DS_Store
+Thumbs.db
